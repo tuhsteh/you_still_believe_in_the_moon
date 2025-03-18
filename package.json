@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "fs": "^0.0.1-security",
+    "urllib": "^4.6.11"
+  },
+  "name": "update-chromedriver",
+  "version": "1.0.0",
+  "description": "update the chromedriver installation",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome",
+    "chromedriver"
+  ],
+  "author": "tom.stear",
+  "license": "MIT"
+}
