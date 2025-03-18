@@ -14,12 +14,12 @@ Sometimes, Chrome updates even though i told it not to and it sucks and i hate i
 
 i use Bash.  Sorry.  If you use ZSH or some other shell, adapt these suggestions for your use.
 
-1. Make sure a personal bin folder is on the PATH (maybe `~/.bash_profile` or `~/.bashrc` or `~/.zshrc`.  i have a `~/bin` location.  You do you.).
-2. Make a shell script that runs the Node "Start" script.  An example is provided in `updatechromedriver.sh.example`.
+1. Make sure a personal bin folder is on the PATH.  
+   (maybe set it in `~/.bash_profile` or `~/.bashrc` or `~/.zshrc`.  i have `export PATH=~/bin:...` among other locations.  You do you.)
+1. Make a shell script somewhere on your `${PATH}` that runs the Node "Start" script.  An example is provided in `updatechromedriver.sh.example`.
 
 ## Where to Install Chromedriver???
 
-That's really up to you.  i put mine in `/usr/local/bin` so that it's available
+That's really up to you.  i put mine in `/usr/local/bin`, which is on the `${PATH}`, so that it's available
 to all processes that need to run it (like Selenium).  Make sure that the location is in your
-`$PATH` so it can be found.
-
+`${PATH}` so it can be found.
