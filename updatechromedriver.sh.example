@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+PREFIX='~/code/tuhsteh/you_still_believe_in_the_moon' 
+
+npm --prefix ${PREFIX} start 
+
+exit 0
+

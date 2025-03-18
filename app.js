@@ -1,7 +1,24 @@
-import {request} from 'urllib';
-import {config} from 'dotenv';
-import {mkdir, writeFile} from 'fs/promises';
-import {execSync} from 'child_process';
+import { request } from 'urllib';
+import { config } from 'dotenv';
+import { mkdir, writeFile } from 'fs/promises';
+import { execSync } from 'child_process';
+
+
+/**
+ * make room, i'm about to monologue.
+ */
+const bridgestoneArena = function (message) {
+    (loudly > 3) && console.log(`        ${message}`);
+}
+const morrisonCenter = function (message) {
+    (loudly > 2) && console.info(`    ${message}`);
+}
+const flyingM = function (message) {
+    (loudly > 1) && console.debug(message);
+}
+/**
+ * thank you.
+ */
 
 
 let target,
@@ -9,61 +26,71 @@ let target,
     platform,
     workingPath,
     installPath,
-    driverVersion;
+    driverVersion,
+    loudly = 9;
 
 
 /**
- * Fetch the page and return the json data.
+ * GET the chrome/chromedriver versions API endpoint,
+ * and give back the whole JSON document.
  * @returns {Promise<any>} - the json data from the page.
  */
-const fetchPage = async function () {
-    // console.debug('    fetching page');
+const bitte = async function () {
+    morrisonCenter('fetching page...');
 
     const {data, res} = await request(target);
-    // console.info(`${res.status}:  ${res.statusText}`);
-    // console.info(`body size:  [${data.length}]`);
+    bridgestoneArena(`${res.status}:  ${res.statusText}`);
+    bridgestoneArena(`body size:  [${data.length}]`);
+    morrisonCenter('done fetching page.');
     return JSON.parse(data);
 };
+
 
 /**
  * Find the download link for the version of the driver we are looking for.
  * @param data - the json data from the page.
  */
-const findVersionDownloadLink = function (data) {
+const threeOhTwo = function (data) {
+    morrisonCenter('finding the correct download url...');
     if (driverVersion !== 'latest') {
-        console.error(`    Version not supported by this Update tool:  [${driverVersion}].`);
-        console.error(`    Consult https://googlechromelabs.github.io/chrome-for-testing/ for available versions to install manually.`)
-        return '';
+        console.error(`Version not supported by this Update tool:  [${driverVersion}].`);
+        console.error(`Consult https://googlechromelabs.github.io/chrome-for-testing/ for available versions to install manually.`)
+        throw new Error('Version not supported.');
     }
     let stable = data.channels.Stable;
     let found = '';
-    // console.info(`    Using version:  [${stable.version}]`);
+    bridgestoneArena(`using version:  [${stable.version}]`);
     stable.downloads.chromedriver.forEach((install) => {
         if (platform === install.platform) {
-            // console.info(`    Found download link:  [${install.url}]`);
+            morrisonCenter(`found download url:  [${install.url}]`);
             found = install.url;
         }
     });
     return found;
 }
 
+
 /**
  * Hydrate the properties from the '.env' environment file.
  * Set your platform, workingPath, installPath especially.
  */
-const hydrateProperties = function () {
+const miseEnPlace = function () {
     config();
+    loudly = process.env.LOUDLY;
     target = process.env.TARGET;
     platform = process.env.PLATFORM;
     workingPath = process.env.WORKING_PATH;
     installPath = process.env.INSTALL_PATH;
     driverVersion = process.env.DRIVER_VERSION;
+    morrisonCenter('hydrating properties...');
 
-    console.info(`    target:         ${target}`);
-    console.info(`    platform:       ${platform}`);
-    console.info(`    workingPath:    ${workingPath}`);
-    console.info(`    installPath:    ${installPath}`);
-    console.info(`    driverVersion:  ${driverVersion}`);
+    bridgestoneArena(`target:         ${target}`);
+    bridgestoneArena(`platform:       ${platform}`);
+    bridgestoneArena(`workingPath:    ${workingPath}`);
+    bridgestoneArena(`installPath:    ${installPath}`);
+    bridgestoneArena(`driverVersion:  ${driverVersion}`);
+    bridgestoneArena(`loudly:         ${loudly}`);
+    morrisonCenter('done hydrating properties.');
 };
 
 
@@ -72,14 +99,16 @@ const hydrateProperties = function () {
  * @param path - the path to the directory.
  * @returns {Promise<void>} - the promise of creating the directory.
  */
-const ensureDirectoryExists = async function (path) {
+const blueLightSpecialInMensIntimates = async function (path) {
+    morrisonCenter(`checking if [${path}] exists...`);
     try {
         await mkdir(path, {recursive: true});
-        // console.info(`    Directory created or already exists:  [${path}]`);
+        bridgestoneArena(`directory created or already exists:  [${path}]`);
     } catch (err) {
-        console.error(`    Error creating directory:  [${err.message}]`);
+        console.error(`Error creating directory:  [${err.message}]`);
         throw err;
     }
+    morrisonCenter('directory exists.');
 };
 
 
@@ -88,9 +117,9 @@ const ensureDirectoryExists = async function (path) {
  * @param url - the url of the file to download.
  * @returns {Promise<void>} - the promise of downloading the file.
  */
-const downloadFile = async function (url) {
+const fourHundredIllBeThereInTwoSeconds = async function (url) {
+    morrisonCenter(`downloading file from ${url}`);
     const savePath = `${workingPath}/chromedriver.zip`;
-    // console.debug(`    downloading file from ${url}`);
 
     const {data, res} = await request(url);
     if (res.statusCode !== 200) {
@@ -98,7 +127,7 @@ const downloadFile = async function (url) {
     }
 
     await writeFile(savePath, data);
-    // console.info(`    file saved to ${savePath}`);
+    morrisonCenter(`file saved to ${savePath}`);
 };
 
 
@@ -106,19 +135,14 @@ const downloadFile = async function (url) {
  * Unzip the file.
  * @returns {Promise<void>} - the promise of unzipping the file.
  */
-const unzipFile = async function () {
-    // console.debug('    unzipping file');
-    execSync(`unzip -o -d ${workingPath} ${workingPath}/chromedriver.zip`, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`    Error unzipping file:  [${err.message}]`);
-            return;
-        }
-        if (stderr) {
-            console.error(`    Error unzipping file:  [${stderr}]`);
-            return;
-        }
-        // console.info(`    Unzipped file:  [${stdout}]`);
-    });
+const iCantHoldAllTheseLemons = async function () {
+    morrisonCenter('unzipping file...');
+    const command = `unzip -o -d ${workingPath} ${workingPath}/chromedriver.zip`;
+    const result = execSync(command, { encoding: 'utf8' });
+    if (result.stderr) {
+        throw new Error(`Error unzipping file:  [${result.stderr}]`);
+    }
+    result.stdout && morrisonCenter(`unzipped file:  [${result.stdout}]`);
 }
 
 
@@ -126,48 +150,41 @@ const unzipFile = async function () {
  * Move the file to the configured install path.
  * @returns {Promise<void>} - the promise of moving the file.
  */
-const moveFileToInstallPath = async function () {
-    // console.debug('    moving file to install path');
-    execSync(`sudo mv ${workingPath}/chromedriver-${platform}/chromedriver ${installPath}`, (err, stdout, stderr) => {
-        if (err) {
-            console.error(`    Error moving file:  [${err.message}]`);
-            return;
-        }
-        if (stderr) {
-            console.error(`    Error moving file:  [${stderr}]`);
-            return;
-        }
-        // console.info(`    Moved file:  [${stdout}]`);
-    });
+const pleaseStandAwayFromThePlatform = async function () {
+    morrisonCenter('moving file to install path...');
+    const command = `sudo mv ${workingPath}/chromedriver-${platform}/chromedriver ${installPath}`;
+    const result = execSync(command, { encoding: 'utf8' });
+    if (result.stderr) {
+        throw new Error(`Error unzipping file:  [${result.stderr}]`);
+    }
+    result.stdout && morrisonCenter(`moved file:  [${result.stdout}]`);
 }
 
 
 ////////////////////////////////////////
 
 
-console.log('Starting...');
-
-hydrateProperties();
-fetchPage()
+flyingM('Let\'s get started...');
+miseEnPlace();
+bitte()
     .then((data) => {
-        url = findVersionDownloadLink(data);
-        console.log(`Download link:  [${url}]`);
-        ensureDirectoryExists(workingPath)
+        url = threeOhTwo(data);
+        flyingM(`Download link:  [${url}]`);
+        blueLightSpecialInMensIntimates(workingPath)
             .then(() => {
-                console.log(`Directory exists.  [${workingPath}]`);
-                downloadFile(url)
+                flyingM(`Directory exists.  [${workingPath}]`);
+                fourHundredIllBeThereInTwoSeconds(url)
                     .then(() => {
-                        console.log(`Download finished.`);
-                        unzipFile()
+                        flyingM(`Download finished.`);
+                        iCantHoldAllTheseLemons()
                             .then(() => {
-                                console.log('Unzipped file.');
-                                moveFileToInstallPath().then(() => {
-                                    console.log(`Moved file to install path.  [${installPath}]`);
-                                    console.log('Done.');
+                                flyingM('Unzipped file.');
+                                pleaseStandAwayFromThePlatform()
+                                    .then(() => {
+                                        flyingM(`Moved file to install path.  [${installPath}]`);
+                                        flyingM('Done.');
                                 });
                             });
                     });
             });
     });
-
-
