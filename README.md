@@ -5,6 +5,7 @@ Sometimes, Chrome updates even though i told it not to and it sucks and i hate i
 ## Usage
 
 1. Checkout the project with Git or just download it.  Put it someplace where you can keep track of it (i like `~/code/{ORGANISATION}/{REPO}`).
+1. Create a `.env` file in the root of the checkout location.  Use `example.env` as an example.  NOTE:  the file should LITERALLY be named `.env` when you're done setting your settings.
 1. Install NodeJS using Node Version Manager (`nvm`), available on [homebrew](https://homebrew.sh).
 1. Use `nvm` to install at least LTS Iron (v20.19.0) or newer.
 1. Use Node Package Manager to install dependencies (`npm install` from the source root).
